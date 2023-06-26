@@ -1,18 +1,18 @@
-name: Docker Image CI
+name: main1
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches: [ main ]
 
 jobs:
-
-  build:
-
-    runs-on: ubuntu-latest
-
+  main:
+    name: run integration tests
+    runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      - uses: actions/checkout@v2
+      - name: Start containers
+        run: docker-compose -f "docker-compose.yml" up -d --build
+      - uses: matt-ball/newman-action@master
+        with:
+          collection: sample.postman_collection.json
+          environment: dev.postman_environment.json
